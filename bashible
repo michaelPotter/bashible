@@ -259,7 +259,7 @@ or() {
 
 absolute_path() {
   local path
-  if grep -E -e '^\s*\//' <<< $1; then
+  if grep -E -e '^\s*//' <<< $1; then
     # $1 is an absolute path or a command (without a path)
     path=$1
   else
