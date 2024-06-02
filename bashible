@@ -141,7 +141,8 @@ ble_check_cmd() {
 }
 
 ble_run_script() {
-  local path=$1; shift
+  local path
+  path=$(basename "$1"); shift
   ble_print_start
   _BLE_FINISHED=0
   source "$path"
