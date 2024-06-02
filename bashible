@@ -68,8 +68,8 @@ ble_set_top_variables() {
   export _BLE_LEVEL=0
   export _BLE_NAV=''
   export _BLE_SUPPRESS_ERRORS=0
-  export _BLE=` absolute_path "$1" ` # the bashible script itself
-  test ` basename "${_BLE}" ` = bashible || fail "the 'basename' command is probably not present"
+  export _BLE=$(absolute_path "$1") # the bashible script itself
+  test $(basename "${_BLE}") = bashible || fail "the 'basename' command is probably not present"
   export _BLE_DELAYED=$(mktemp) # store commands run at the end
   test ${#_BLE_DELAYED} || fail "_BLE_DELAYED tempfile can not be created, is the 'mktemp' command present?"
   export _BLE_ALREADY=$(mktemp) # store already run commands
@@ -78,16 +78,16 @@ ble_set_top_variables() {
 }
 
 ble_set_variables() {
-  _BLE_ORIG_DIR=` pwd `
-  _BLE_DIR=` absolute_path $( dirname "${_BLE}" ) `  # bashible modules reside there
-  _BLE_SCRIPT_PATH=`absolute_path "$1"`
-  base_dir "`dirname "${_BLE_SCRIPT_PATH}"`"
+  _BLE_ORIG_DIR=$(pwd)
+  _BLE_DIR=$(absolute_path $( dirname "${_BLE}" ))  # bashible modules reside there
+  _BLE_SCRIPT_PATH=$(absolute_path "$1")
+  base_dir "$(dirname "${_BLE_SCRIPT_PATH}")"
   _BLE_ORIG_BASE_DIR=${_BASE_DIR}
   let _BLE_LEVEL=${_BLE_LEVEL}+1
   if test ${#_BLE_NAV} -eq 0 ; then
-    _BLE_NAV="`basename ${_BLE_SCRIPT_PATH} | sed "s/\.ble\$//" `"
+    _BLE_NAV="$(basename ${_BLE_SCRIPT_PATH} | sed "s/\.ble\$//")"
   else
-    _BLE_NAV="${_BLE_NAV} -> `basename ${_BLE_SCRIPT_PATH} | sed "s/\.ble\$//" `"
+    _BLE_NAV="${_BLE_NAV} -> $(basename ${_BLE_SCRIPT_PATH} | sed "s/\.ble\$//")"
   fi
   _BLE_ANDOR=0                     # main conditional mode (0=AND 1=OR)
   _BLE_ANDSKIP=0                   # skipping mode for AND
@@ -274,7 +274,7 @@ absolute_path() {
 }
 
 base_dir() {
-  _BASE_DIR=`absolute_path "$1"`
+  _BASE_DIR=$(absolute_path "$1")
   ble_cd_basedir
 }
 
@@ -348,7 +348,7 @@ is_toplevel() {
 
 is_empty_dir() {
   local buf
-  if buf=` ls -A $1 | wc -l `; then
+  if buf=$(ls -A $1 | wc -l); then
     ((buf==0))
   else
     ble_handle_exitstatus $? "$@"
@@ -358,7 +358,7 @@ is_empty_dir() {
 is_empty_output() {
   ble_check_cmd "$1"
   local buf
-  if buf=` "$@" `; then
+  if buf=$("$@"); then
     echo "$buf"
     test ${#buf} -eq 0
   else
@@ -530,8 +530,8 @@ result() {
 
 unless_already() {
   local cmd=$1; shift
-  local path=`absolute_path "$cmd"`
-  local scmd=`ble_serialize_command "$path" "$@"`
+  local path=$(absolute_path "$cmd")
+  local scmd=$(ble_serialize_command "$path" "$@")
   if ! grep -q "$scmd" < ${_BLE_ALREADY}; then
     echo "$scmd" >> "${_BLE_ALREADY}" || fail "can't write to _BLE_ALREADY file (${_BLE_ALREADY})"
     if ! "$path" "$@"; then
