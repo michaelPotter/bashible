@@ -143,6 +143,9 @@ ble_check_cmd() {
 ble_run_script() {
   local path
   path=$(basename "$1"); shift
+  if ! test -f "$path"; then
+    fail "Could not find script '$path'"
+  fi
   ble_print_start
   _BLE_FINISHED=0
   source "$path"
